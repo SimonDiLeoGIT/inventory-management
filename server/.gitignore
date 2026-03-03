@@ -1,0 +1,7 @@
+node_modules
+dist
+
+.env
+
+# Ignore database file
+storage/data.db
