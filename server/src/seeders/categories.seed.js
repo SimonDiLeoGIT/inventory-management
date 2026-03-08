@@ -19,9 +19,15 @@ module.exports = async (db) => {
     },
   ];
 
-  await db.Category.bulkCreate(categories, {
-    ignoreDuplicates: true,
-  });
+  for (const category of categories) {
+    const exists = await db.Category.findOne({
+      where: { name: category.name },
+    });
+
+    if (!exists) {
+      await db.Category.create(category);
+    }
+  }
 
   console.log("✔ Categories seeded");
 };

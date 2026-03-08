@@ -4,6 +4,9 @@ import { ProtectedRoute } from '../Page/Auth/ProtectedRoute'
 import Login from '../Page/Auth/Login'
 import { Dashboard } from '../Page/Dashboard/Dashboard'
 import { AppLayout } from '../Layout/AppLayout'
+import { Categories } from '../Page/Categories/Categories'
+import { Products } from '../Page/Products/Products'
+import { Movements } from '../Page/Movements/Movements'
 
 const Router = () => {
   return (
@@ -17,6 +20,9 @@ const Router = () => {
 
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/categorias" element={<Categories />} />
+        <Route path="/productos" element={<Products />} />
+        <Route path="/movimientos" element={<Movements />} />
 
       </Route>
 

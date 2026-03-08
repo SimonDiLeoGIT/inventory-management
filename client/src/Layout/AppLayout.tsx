@@ -7,7 +7,7 @@ export const AppLayout = () => {
 
       <Sidebar />
 
-      <main className="flex-1 p-6 bg-gray-100 min-h-screen">
+      <main className="flex-1 p-8 bg-gray-100 dark:bg-zinc-950 text-bg-zinc-900 dark:text-zinc-200 h-screen overflow-y-auto">
         <Outlet />
       </main>
 

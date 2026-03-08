@@ -29,7 +29,7 @@ exports.getCategories = async (req, res, next) => {
 
     res.json({
       success: true,
-      data: categories,
+      categories: categories,
     });
   } catch (error) {
     next(error);
@@ -50,7 +50,7 @@ exports.getCategoryById = async (req, res, next) => {
 
     res.json({
       success: true,
-      data: category,
+      category: category,
     });
   } catch (error) {
     next(error);
@@ -73,7 +73,7 @@ exports.updateCategory = async (req, res, next) => {
 
     res.json({
       success: true,
-      data: category,
+      category: category,
     });
   } catch (error) {
     next(error);

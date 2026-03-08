@@ -36,7 +36,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         setUser(response.data.user)
         setIsAuthenticated(true)
-
       } catch {
 
         console.error("Token inválido o expirado")

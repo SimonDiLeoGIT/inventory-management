@@ -2,6 +2,7 @@ const db = require("../models");
 
 const categorySeeder = require("./categories.seed");
 const roleSeeder = require("./roles.seed");
+const productSeeder = require("./products.seed");
 
 const runSeeders = async () => {
   try {
@@ -11,6 +12,7 @@ const runSeeders = async () => {
 
     await roleSeeder(db);
     await categorySeeder(db);
+    await productSeeder(db);
 
     console.log("All seeders executed successfully");
   } catch (error) {
