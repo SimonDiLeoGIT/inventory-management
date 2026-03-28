@@ -5,6 +5,7 @@ const role = require("../../middlewares/permission.middleware");
 
 router.get("/", checkAuth, UserController.getUser);
 router.get("/all", checkAuth, UserController.getAllUsers);
+router.put("/me", checkAuth, UserController.updateMe);
 router.put(
   "/assign-role",
   checkAuth,

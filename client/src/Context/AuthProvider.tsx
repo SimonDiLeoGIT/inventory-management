@@ -60,16 +60,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       )
 
       if (response.data.success) {
-        setIsAuthenticated(true)
+          localStorage.setItem("token", response.data.token)
 
-        localStorage.setItem("token", response.data.token)
+          const me = await axios.get(`${import.meta.env.VITE_API_URL}auth/me`, {
+            headers: { Authorization: `Bearer ${response.data.token}` }
+          })
 
-        setUser(response.data.user)
-
-        return true
-      }
-
-      return false
+          setUser(me.data.user)
+          setIsAuthenticated(true)
+        
+          return true
+        } else {
+          return false
+        }
 
     } catch (error: any) {
 
@@ -82,8 +85,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   const logout = () => {
+    localStorage.removeItem("token")
     setIsAuthenticated(false)
-    // localStorage.removeItem("token")
+    setUser(null)
   }
 
   return (

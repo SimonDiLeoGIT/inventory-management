@@ -1,4 +1,5 @@
 const db = require("../../models");
+const { Op } = require("sequelize");
 
 const Movement = db.Movement;
 const Product = db.Product;
@@ -9,7 +10,9 @@ const User = db.User;
  */
 exports.createMovement = async (req, res) => {
   try {
-    const { productId, type, quantity, reason, userId } = req.body;
+    const { productId, type, quantity, reason } = req.body;
+
+    const userId = req.user?.id || null;
 
     const product = await Product.findByPk(productId);
 
@@ -20,12 +23,9 @@ exports.createMovement = async (req, res) => {
       });
     }
 
-    // Calcular nuevo stock
     let newStock = product.stock;
 
-    if (type === "IN") {
-      newStock += quantity;
-    }
+    if (type === "IN") newStock += quantity;
 
     if (type === "OUT") {
       newStock -= quantity;
@@ -38,11 +38,8 @@ exports.createMovement = async (req, res) => {
       }
     }
 
-    if (type === "ADJUST") {
-      newStock = quantity;
-    }
+    if (type === "ADJUST") newStock = quantity;
 
-    // Crear movimiento
     const movement = await Movement.create({
       productId,
       type,
@@ -51,10 +48,7 @@ exports.createMovement = async (req, res) => {
       userId,
     });
 
-    // Actualizar stock
-    await product.update({
-      stock: newStock,
-    });
+    await product.update({ stock: newStock });
 
     res.status(201).json({
       success: true,
@@ -70,27 +64,60 @@ exports.createMovement = async (req, res) => {
 };
 
 /**
- * Obtener todos los movimientos
+ * Obtener movimientos (paginado + filtros)
  */
 exports.getMovements = async (req, res) => {
   try {
-    const movements = await Movement.findAll({
+    const { page = 1, limit = 10, type, productId, search = "" } = req.query;
+
+    const offset = (page - 1) * limit;
+
+    const where = {};
+
+    if (type) where.type = type;
+
+    if (productId) where.productId = productId;
+
+    const productWhere = {};
+
+    if (search) {
+      productWhere[Op.or] = [
+        { name: { [Op.like]: `%${search}%` } },
+        { sku: { [Op.like]: `%${search}%` } },
+      ];
+    }
+
+    const { count, rows } = await Movement.findAndCountAll({
+      where,
+
       include: [
         {
           model: Product,
           attributes: ["id", "name", "sku"],
+          where: Object.keys(productWhere).length ? productWhere : undefined,
         },
         {
           model: User,
-          attributes: ["id", "name"],
+          as: "user",
+          attributes: ["id", "username"],
         },
       ],
+
+      limit: Number(limit),
+      offset: Number(offset),
+
       order: [["timestamp", "DESC"]],
     });
 
     res.json({
       success: true,
-      movements,
+      movements: rows,
+      pagination: {
+        total: count,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(count / limit),
+      },
     });
   } catch (error) {
     res.status(500).json({
@@ -113,7 +140,7 @@ exports.getMovementById = async (req, res) => {
         },
         {
           model: User,
-          attributes: ["id", "name"],
+          attributes: ["id", "username"],
         },
       ],
     });

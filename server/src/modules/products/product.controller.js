@@ -1,7 +1,7 @@
 const db = require("../../models");
 const Product = db.Product;
 const Category = db.Category;
-const { Op } = require("sequelize");
+const { Op, col } = require("sequelize");
 
 /**
  * Crear producto
@@ -153,6 +153,29 @@ exports.deleteProduct = async (req, res) => {
       message: "Producto eliminado",
     });
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+// Obtener cantidad de productos bajos de stock
+exports.getLowStockProducts = async (req, res) => {
+  try {
+    const lowStockProducts = await Product.count({
+      where: {
+        stock: {
+          [Op.lte]: col("minStock"),
+        },
+      },
+    });
+    res.json({
+      success: true,
+      count: lowStockProducts,
+    });
+  } catch (error) {
+    console.error("Error fetching low stock products:", error);
     res.status(500).json({
       success: false,
       error: error.message,

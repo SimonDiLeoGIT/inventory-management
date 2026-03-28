@@ -42,7 +42,7 @@ export const MovementModal: React.FC<Props> = ({
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
 
-      <div className="bg-zinc-100 dark:bg-zinc-800 rounded-xl w-110 p-6">
+      <div className="bg-zinc-100 dark:bg-zinc-800 border dark:border-zinc-600 rounded-xl w-110 p-6">
 
         <h2 className="text-xl font-bold mb-4">
           Nuevo Movimiento
@@ -50,45 +50,64 @@ export const MovementModal: React.FC<Props> = ({
 
         <div className="space-y-4">
 
-          <select
-            value={form.productId}
-            onChange={(e)=>setForm({...form,productId:Number(e.target.value)})}
-            className="w-full border p-2 rounded"
-          >
-            <option value={0}>Seleccionar producto</option>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Producto
+            </label>
+            <select
+              value={form.productId}
+              onChange={(e)=>setForm({...form,productId:Number(e.target.value)})}
+              className="w-full border p-2 rounded"
+            >
+              <option value={0}>Seleccionar producto</option>
 
-            {products.map(p=>(
-              <option key={p.id} value={p.id}>
-                {p.name} ({p.sku})
-              </option>
-            ))}
+              {products.map(p=>(
+                <option key={p.id} value={p.id}>
+                  {p.name} ({p.sku})
+                </option>
+              ))}
 
-          </select>
+            </select>
+          </div>
 
-          <select
-            value={form.type}
-            onChange={(e)=>setForm({...form,type:e.target.value})}
-            className="w-full border p-2 rounded"
-          >
-            <option value="IN">Entrada</option>
-            <option value="OUT">Salida</option>
-            <option value="ADJUST">Ajuste</option>
-          </select>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Tipo de movimiento
+            </label>
+            <select
+              value={form.type}
+              onChange={(e)=>setForm({...form,type:e.target.value})}
+              className="w-full border p-2 rounded"
+            >
+              <option value="IN">Entrada</option>
+              <option value="OUT">Salida</option>
+              <option value="ADJUST">Ajuste</option>
+            </select>
+          </div>
 
-          <input
-            type="number"
-            placeholder="Cantidad"
-            value={form.quantity}
-            onChange={(e)=>setForm({...form,quantity:Number(e.target.value)})}
-            className="w-full border p-2 rounded"
-          />
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Cantidad
+            </label>
+            <input
+              type="number"
+              value={form.quantity}
+              onChange={(e)=>setForm({...form,quantity:Number(e.target.value)})}
+              className="w-full border p-2 rounded"
+            />
+          </div>
 
-          <textarea
-            placeholder="Motivo"
-            value={form.reason}
-            onChange={(e)=>setForm({...form,reason:e.target.value})}
-            className="w-full border p-2 rounded"
-          />
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Motivo
+            </label>
+            <textarea
+              placeholder="Ej: reposición de stock"
+              value={form.reason}
+              onChange={(e)=>setForm({...form,reason:e.target.value})}
+              className="w-full border p-2 rounded"
+            />
+          </div>
 
         </div>
 

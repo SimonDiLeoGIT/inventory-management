@@ -11,8 +11,8 @@ addFormats(ajv);
 const encryptPassword = (password) =>
   crypto.createHash("sha256").update(password).digest("hex");
 
-const generateAccessToken = (username, userId) =>
-  jwt.sign({ username, userId }, "your-secret-key", { expiresIn: "24h" });
+const generateAccessToken = (username, id) =>
+  jwt.sign({ username, id }, "your-secret-key", { expiresIn: "24h" });
 
 exports.register = async (req, res) => {
   try {
@@ -68,7 +68,9 @@ exports.login = async (req, res) => {
   }
   const { email, password } = req.body;
   const encrypted = encryptPassword(password);
-  const user = await User.findOne({ where: { email } });
+  const user = await User.scope("withRole").findOne({
+    where: { email },
+  });
   if (!user || user.password !== encrypted)
     return res.status(401).json({ error: "Invalid credentials" });
 
@@ -84,11 +86,18 @@ exports.me = async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, "your-secret-key");
-    const user = await User.findByPk(decoded.userId, {
+    const user = await User.scope("withRole").findByPk(decoded.id, {
       attributes: { exclude: ["password"] },
     });
     if (!user) return res.status(404).json({ error: "User not found" });
-    res.json({ success: true, user });
+    const userJson = user.toJSON();
+    res.json({
+      success: true,
+      user: {
+        ...userJson,
+        roles: userJson.role ? [userJson.role.name] : [],
+      },
+    });
   } catch (err) {
     res.status(403).json({ error: "Invalid token" });
   }

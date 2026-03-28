@@ -43,3 +43,19 @@ exports.getAllUsers = async (req, res) => {
   const users = await db.User.findAll();
   res.json({ success: true, data: users });
 };
+
+exports.updateMe = async (req, res) => {
+  const user = await db.User.findByPk(req.user.id);
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  await user.update({
+    username: req.body.name,
+    email: req.body.email,
+  });
+  res.json({
+    success: true,
+    data: user,
+  });
+};
